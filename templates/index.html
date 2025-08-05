@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bennett ERP Attendance Automation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #1a1a1a;
+            --secondary-black: #2d2d2d;
+            --light-black: #404040;
+            --pure-white: #ffffff;
+            --off-white: #fafafa;
+            --light-beige: #f5f2ed;
+            --beige: #e8e0d4;
+            --dark-beige: #d4c4b0;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --border-light: #e5e5e5;
+            --border-dark: #d0d0d0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--light-beige);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--primary-black);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .navbar-brand {
+            color: var(--pure-white) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .navbar-brand:hover {
+            color: var(--beige) !important;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+            color: var(--pure-white);
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: var(--beige);
+            opacity: 0.1;
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: var(--pure-white);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: var(--off-white);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: var(--pure-white);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-black);
+            box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-black);
+            color: var(--pure-white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-black);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: var(--pure-white);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid var(--border-dark);
+            color: var(--text-primary);
+            background: var(--pure-white);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--beige);
+            border-color: var(--dark-beige);
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-running {
+            background-color: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        .status-stopped {
+            background-color: #6c757d;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--pure-white);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-black);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .log-entry {
+            background: var(--off-white);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .log-entry:hover {
+            background: var(--pure-white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .log-success {
+            border-left: 4px solid #28a745;
+        }
+
+        .log-failed {
+            border-left: 4px solid #dc3545;
+        }
+
+        .log-error {
+            border-left: 4px solid #ffc107;
+        }
+
+        .session-item {
+            background: var(--off-white);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .session-item:hover {
+            background: var(--pure-white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+        }
+
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 350px;
+            border-radius: 8px;
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .notification.alert-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .notification.alert-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+            margin: 2rem 0;
+        }
+
+        .control-panel {
+            background: var(--beige);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--dark-beige);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .main-container {
+                padding: 0 0.5rem;
+                margin: 1rem auto;
+            }
+            
+            .hero-section {
+                padding: 2rem 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 576px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Bennett ERP Automation
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">Attendance Management System</h1>
+            <p class="hero-subtitle">Streamline your attendance tracking with automated precision</p>
+        </div>
+
+        <!-- Session Control -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-cog me-2"></i>Session Configuration
+            </div>
+            <div class="card-body">
+                <form id="sessionForm">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" required placeholder="Enter your email">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" required placeholder="Enter your password">
+                        </div>
+                        <div class="col-12">
+                            <div class="row g-4">
+                                <div class="col-md-8">
+                                    <label for="studentId" class="form-label">Student ID <span class="text-muted">(Optional)</span></label>
+                                    <input type="text" class="form-control" id="studentId" placeholder="Enter student ID if available">
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100" id="startBtn" style="height: fit-content; padding: 1rem 1.5rem;">
+                                        <i class="fas fa-play me-2"></i>Start Session
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="statsGrid" style="display: none;">
+            <div class="stat-card">
+                <span class="stat-number" id="totalSessions">0</span>
+                <div class="stat-label">Active Sessions</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="successRate">0%</span>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="lastSync">Never</span>
+                <div class="stat-label">Last Sync</div>
+            </div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="card" id="activeSessionsCard" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-users me-2"></i>Active Sessions
+            </div>
+            <div class="card-body">
+                <div id="activeSessionsList"></div>
+            </div>
+        </div>
+
+        <!-- Session Status -->
+        <div class="card" id="statusCard" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-chart-line me-2"></i>Session Monitor
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Current Status</h6>
+                        <p id="sessionStatus" class="h5 mb-0">
+                            <span class="status-indicator status-stopped"></span>Initializing...
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Last Activity</h6>
+                        <p id="lastActivity" class="h5 mb-0">Never</p>
+                    </div>
+                    <div class="col-12">
+                        <div class="section-divider"></div>
+                        <div class="action-buttons">
+                            <button class="btn btn-danger" id="stopBtn">
+                                <i class="fas fa-stop me-2"></i>Stop Session
+                            </button>
+                            <button class="btn btn-outline-secondary" id="refreshBtn">
+                                <i class="fas fa-sync-alt me-2"></i>Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Log -->
+        <div class="card" id="logCard" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-clipboard-list me-2"></i>Attendance Records
+            </div>
+            <div class="card-body">
+                <div id="attendanceLog">
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard"></i>
+                        <p>No attendance records available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Log -->
+        <div class="card" id="errorCard" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-exclamation-triangle me-2"></i>System Alerts
+            </div>
+            <div class="card-body">
+                <div id="errorLog">
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>No system alerts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentSessionId = null;
+        let statusInterval = null;
+        let isLoading = false;
+
+        document.getElementById('sessionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (isLoading) return;
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const studentId = document.getElementById('studentId').value;
+            const startBtn = document.getElementById('startBtn');
+
+            isLoading = true;
+            startBtn.innerHTML = '<span class="loading-spinner me-2"></span>Starting...';
+            startBtn.disabled = true;
+
+            try {
+                const response = await fetch('/start_session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        student_id: studentId
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentSessionId = data.session_id;
+                    showNotification('Session started successfully!', 'success');
+                    
+                    // Show relevant sections
+                    document.getElementById('statusCard').style.display = 'block';
+                    document.getElementById('logCard').style.display = 'block';
+                    document.getElementById('errorCard').style.display = 'block';
+                    document.getElementById('statsGrid').style.display = 'grid';
+                    
+                    startStatusUpdates();
+                    updateActiveSessions();
+                } else {
+                    showNotification(data.message || 'Failed to start session', 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            } finally {
+                isLoading = false;
+                startBtn.innerHTML = '<i class="fas fa-play me-2"></i>Start Session';
+                startBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('stopBtn').addEventListener('click', async function() {
+            if (!currentSessionId || isLoading) return;
+
+            const stopBtn = this;
+            stopBtn.innerHTML = '<span class="loading-spinner me-2"></span>Stopping...';
+            stopBtn.disabled = true;
+
+            try {
+                const response = await fetch('/stop_session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Session stopped successfully!', 'success');
+                    stopStatusUpdates();
+                    currentSessionId = null;
+                    
+                    // Hide sections
+                    document.getElementById('statusCard').style.display = 'none';
+                    document.getElementById('logCard').style.display = 'none';
+                    document.getElementById('errorCard').style.display = 'none';
+                    document.getElementById('statsGrid').style.display = 'none';
+                    
+                    updateActiveSessions();
+                } else {
+                    showNotification(data.message || 'Failed to stop session', 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            } finally {
+                stopBtn.innerHTML = '<i class="fas fa-stop me-2"></i>Stop Session';
+                stopBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            if (currentSessionId) {
+                updateStatus();
+                showNotification('Status refreshed', 'success');
+            }
+        });
+
+        function startStatusUpdates() {
+            if (statusInterval) clearInterval(statusInterval);
+            statusInterval = setInterval(updateStatus, 5000);
+            updateStatus();
+        }
+
+        function stopStatusUpdates() {
+            if (statusInterval) {
+                clearInterval(statusInterval);
+                statusInterval = null;
+            }
+        }
+
+        async function updateStatus() {
+            if (!currentSessionId) return;
+
+            try {
+                const response = await fetch(`/get_status?session_id=${currentSessionId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    showNotification('Session not found', 'error');
+                    return;
+                }
+
+                // Update status
+                const statusElement = document.getElementById('sessionStatus');
+                statusElement.innerHTML = data.is_running ? 
+                    '<span class="status-indicator status-running"></span>Running' : 
+                    '<span class="status-indicator status-stopped"></span>Stopped';
+
+                // Update last activity
+                document.getElementById('lastActivity').textContent = data.last_activity || 'Never';
+                document.getElementById('lastSync').textContent = data.last_activity || 'Never';
+
+                // Update stats
+                const sessions = await getActiveSessions();
+                document.getElementById('totalSessions').textContent = Object.keys(sessions).length;
+                
+                // Calculate success rate
+                const totalLogs = data.attendance_log.length;
+                const successLogs = data.attendance_log.filter(log => log.status === 'SUCCESS').length;
+                const successRate = totalLogs > 0 ? Math.round((successLogs / totalLogs) * 100) : 0;
+                document.getElementById('successRate').textContent = successRate + '%';
+
+                // Update attendance log
+                const logContainer = document.getElementById('attendanceLog');
+                if (data.attendance_log.length > 0) {
+                    logContainer.innerHTML = '';
+                    data.attendance_log.slice(-10).reverse().forEach(entry => {
+                        const logEntry = document.createElement('div');
+                        logEntry.className = `log-entry log-${entry.status.toLowerCase()}`;
+                        logEntry.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>${entry.subject}</strong>
+                                    <div class="small text-muted mt-1">
+                                        ${entry.faculty} • ${entry.timestamp}
+                                    </div>
+                                </div>
+                                <span class="badge badge-${entry.status === 'SUCCESS' ? 'success' : 'danger'}">
+                                    ${entry.status}
+                                </span>
+                            </div>
+                        `;
+                        logContainer.appendChild(logEntry);
+                    });
+                } else {
+                    logContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard"></i>
+                            <p>No attendance records available</p>
+                        </div>
+                    `;
+                }
+
+                // Update error log
+                const errorContainer = document.getElementById('errorLog');
+                if (data.error_log.length > 0) {
+                    errorContainer.innerHTML = '';
+                    data.error_log.slice(-5).reverse().forEach(error => {
+                        const errorEntry = document.createElement('div');
+                        errorEntry.className = 'log-entry log-error';
+                        errorEntry.innerHTML = `
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${error}
+                        `;
+                        errorContainer.appendChild(errorEntry);
+                    });
+                } else {
+                    errorContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No system alerts</p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+
+        async function getActiveSessions() {
+            try {
+                const response = await fetch('/get_active_sessions');
+                return await response.json();
+            } catch (error) {
+                console.error('Error getting active sessions:', error);
+                return {};
+            }
+        }
+
+        async function updateActiveSessions() {
+            try {
+                const sessions = await getActiveSessions();
+                const container = document.getElementById('activeSessionsList');
+                const card = document.getElementById('activeSessionsCard');
+
+                if (Object.keys(sessions).length > 0) {
+                    container.innerHTML = '';
+                    Object.entries(sessions).forEach(([sessionId, session]) => {
+                        const sessionDiv = document.createElement('div');
+                        sessionDiv.className = 'session-item';
+                        sessionDiv.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">${session.email}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Last activity: ${session.last_activity || 'Never'}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="mb-2">
+                                        <span class="status-indicator ${session.is_running ? 'status-running' : 'status-stopped'}"></span>
+                                        ${session.is_running ? 'Running' : 'Stopped'}
+                                    </div>
+                                    <small class="text-muted">ID: ${sessionId.substring(0, 8)}...</small>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(sessionDiv);
+                    });
+                    card.style.display = 'block';
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <p>No active sessions</p>
+                        </div>
+                    `;
+                    card.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error updating active sessions:', error);
+            }
+        }
+
+        function showNotification(message, type) {
+            // Remove existing notifications
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `alert notification alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                    <span>${message}</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+
+        // Initial load
+        updateActiveSessions();
+        setInterval(updateActiveSessions, 10000);
+    </script>
+</body>
+</html>
