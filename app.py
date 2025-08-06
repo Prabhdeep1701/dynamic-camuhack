@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory
 import asyncio
 import threading
 import time
@@ -8,7 +8,12 @@ from main import get_sid, fetch_timetable, mark_attendance, check_and_mark_atten
 import os
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
+
+# Configure app for production deployment
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('HTTPS', 'False').lower() == 'true'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Global variables to track running sessions
 active_sessions = {}
@@ -113,6 +118,28 @@ class AttendanceSession:
 def index():
     return render_template('index.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    # Return a proper favicon response
+    try:
+        return send_from_directory('static', 'favicon.ico', mimetype='image/x-icon')
+    except:
+        # Fallback: return empty response if favicon doesn't exist
+        return '', 204
+
+@app.route('/robots.txt')
+def robots():
+    return '''User-agent: *
+Disallow: /''', 200, {'Content-Type': 'text/plain'}
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'Endpoint not found'}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({'error': 'Internal server error'}), 500
+
 @app.route('/start_session', methods=['POST'])
 def start_session():
     data = request.get_json()
@@ -176,4 +203,13 @@ def get_active_sessions():
     return jsonify(sessions)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    # Use environment variables for deployment configuration
+    host = os.environ.get('HOST', '0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('DEBUG', 'False').lower() == 'true'
+    
+    print(f"Starting server on {host}:{port}")
+    print(f"Debug mode: {debug}")
+    print(f"Access the app at: http://{host}:{port}")
+    
+    app.run(debug=debug, host=host, port=port, threaded=True) 
